@@ -1,0 +1,120 @@
+# -------------------------
+# Node & Package Manager
+# -------------------------
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# -------------------------
+# Environment Files
+# -------------------------
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+.env.*
+!env.example
+
+# -------------------------
+# Logs & Debug
+# -------------------------
+logs/
+*.log
+*.log.*
+debug.log
+pm2.log
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# -------------------------
+# Build / Cache
+# -------------------------
+dist/
+build/
+.cache/
+.cache-loader/
+.tmp/
+temp/
+tmp/
+
+# -------------------------
+# Media & Uploaded Files
+# (Local uploads that should not be committed)
+# -------------------------
+uploads/
+public/uploads/
+storage/
+media/
+tmp_uploads/
+
+# -------------------------
+# Coverage & Tests
+# -------------------------
+coverage/
+.nyc_output/
+test-output/
+jest-cache/
+jest-debug.log
+
+# -------------------------
+# IDE & OS Files
+# -------------------------
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+*.DS_Store
+Thumbs.db
+
+# -------------------------
+# TypeScript (if using)
+# -------------------------
+*.tsbuildinfo
+
+# -------------------------
+# Optional Docker
+# -------------------------
+docker-data/
+docker-compose.override.yml
+
+# -------------------------
+# Server Runtime
+# -------------------------
+*.sock
+*.pem
+*.key
+*.crt
+
+# -------------------------
+# Cache & Sessions
+# -------------------------
+sessions/
+cache/
+redis-data/
+mongo-data/
+
+# -------------------------
+# Env-Based Generated Files
+# -------------------------
+config/local.js
+config/*.local.json
+
+# -------------------------
+# Tools / misc
+# -------------------------
+eslintcache
+prettier-cache
+.npm/
+.babelcache/
+.husky/*-cache

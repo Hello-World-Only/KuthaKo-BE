@@ -1,0 +1,55 @@
+// server/src/app.js
+
+import express from "express";
+import cors from "cors";
+import helmet from "helmet";
+import rateLimit from "express-rate-limit";
+import "express-async-errors"; // catches async errors
+
+// ======================================== //
+// Import routes (will convert routes to ESM later)
+import userRoutes from "./modules/user/user.routes.js";
+import authRoutes from "./modules/auth/auth.routes.js";
+
+const app = express();
+
+// ======================================== //
+// Middleware
+app.use(cors());
+app.use(helmet());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// ======================================== //
+// Rate limiter (basic)
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100,
+});
+app.use(limiter);
+
+// ======================================== //
+// Test route
+app.get("/", (req, res) => {
+  res.json({ message: "Server is running!" });
+});
+
+// ======================================== //
+// API Routes
+// All user routes are under /api/v1
+app.use("/api/v1", userRoutes);
+
+// Auth routes
+app.use("/api/v1/auth", authRoutes);
+
+// ======================================== //
+// Global Error Handler
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(err.status || 500).json({
+    success: false,
+    message: err.message || "Server Error",
+  });
+});
+
+export default app;
