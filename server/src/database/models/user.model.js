@@ -4,22 +4,25 @@ import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 
 const userSchema = new mongoose.Schema({
-  // Name is NOT required during OTP login
+
+  // Not required for OTP login
   name: { type: String, default: null, trim: true },
 
   email: {
     type: String,
     unique: true,
-    sparse: true, // allow null when phone login
+    sparse: true,        // allows multiple nulls
     lowercase: true,
     trim: true,
+    default: null
   },
 
   phone: {
     type: String,
     unique: true,
-    sparse: true, // allow null when email login
+    sparse: true,        // allows multiple nulls
     trim: true,
+    default: null
   },
 
   password: { type: String },
@@ -37,7 +40,7 @@ const userSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
 });
 
-// Pre-save hook to hash password if present
+// Pre-save hook
 userSchema.pre("save", async function (next) {
   if (this.password && this.isModified("password")) {
     const salt = await bcrypt.genSalt(10);
@@ -45,12 +48,6 @@ userSchema.pre("save", async function (next) {
   }
   next();
 });
-
-// Method to compare password
-userSchema.methods.comparePassword = async function (candidatePassword) {
-  if (!this.password) return false;
-  return bcrypt.compare(candidatePassword, this.password);
-};
 
 const User = mongoose.model("User", userSchema);
 
