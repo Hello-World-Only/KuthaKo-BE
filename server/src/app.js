@@ -13,6 +13,9 @@ import authRoutes from "./modules/auth/auth.routes.js";
 
 const app = express();
 
+// Required when running behind Render proxy
+app.set("trust proxy", 1);
+
 // ======================================== //
 // Middleware
 app.use(cors());
