@@ -81,7 +81,15 @@
 -- 8.2: Quick manual tests to verify flows
 
 
+-- ## DID-NOT completed in DAY-3
+-- #9: Extras / production notes (can be done later)
+-- 9.1: Twilio/SMS/email provider setup, env vars
+-- 9.2: Rate-limiting, OTP attempt limits, resend cooldown
+-- 9.3: PhonePrefix list endpoint for frontend country picker
+-- # =================================== #
 
+-- # =================================== #
+[ === Moved to Day 4 from Day 3 ==== ]
 -- #9: Extras / production notes (can be done later)
 -- 9.1: Twilio/SMS/email provider setup, env vars
 -- 9.2: Rate-limiting, OTP attempt limits, resend cooldown
