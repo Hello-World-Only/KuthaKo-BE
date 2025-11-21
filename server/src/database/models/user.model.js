@@ -4,14 +4,13 @@ import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 
 const userSchema = new mongoose.Schema({
-
-  // Not required for OTP login
-  name: { type: String, default: null, trim: true },
+  // Name is NOT required at OTP signup
+  name: { type: String, trim: true, default: null },
 
   email: {
     type: String,
     unique: true,
-    sparse: true,        // allows multiple nulls
+    sparse: true,      // allows multiple null values
     lowercase: true,
     trim: true,
     default: null
@@ -20,12 +19,12 @@ const userSchema = new mongoose.Schema({
   phone: {
     type: String,
     unique: true,
-    sparse: true,        // allows multiple nulls
+    sparse: true,      // allows multiple null values
     trim: true,
     default: null
   },
 
-  password: { type: String },
+  password: { type: String, default: null },
 
   avatar: { type: String, default: null },
 
@@ -40,7 +39,7 @@ const userSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
 });
 
-// Pre-save hook
+// Hash password if present
 userSchema.pre("save", async function (next) {
   if (this.password && this.isModified("password")) {
     const salt = await bcrypt.genSalt(10);

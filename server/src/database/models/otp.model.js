@@ -8,7 +8,7 @@ const otpSchema = new mongoose.Schema(
             type: String,
             required: true,
             index: true,
-            unique: true, // Only one active OTP per identifier
+            // DO NOT use unique: true (causes TTL conflicts)
         },
 
         otp: {
@@ -28,11 +28,9 @@ const otpSchema = new mongoose.Schema(
         },
     },
     {
-        timestamps: true, // adds createdAt, updatedAt
+        timestamps: true,
     }
 );
-
-// No TTL here (we manually check expiry for full control)
 
 const OTP = mongoose.model("OTP", otpSchema);
 
