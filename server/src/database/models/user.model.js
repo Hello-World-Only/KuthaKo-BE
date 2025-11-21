@@ -4,13 +4,21 @@ import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 
 const userSchema = new mongoose.Schema({
-  name: { type: String, required: true, trim: true },
+  // Name is NOT required during OTP login
+  name: { type: String, default: null, trim: true },
 
   email: {
     type: String,
-    required: true,
     unique: true,
+    sparse: true, // allow null when phone login
     lowercase: true,
+    trim: true,
+  },
+
+  phone: {
+    type: String,
+    unique: true,
+    sparse: true, // allow null when email login
     trim: true,
   },
 
