@@ -1,164 +1,221 @@
-# **1-Month Backend Development Roadmap**
-
-### **Week 1 — Setup + Core Infrastructure**
-
-**Goal:** Get the project scaffold ready, basic server running, DB connected.
-
-**Day 1-2: Project setup**
-
-- Create project folders (we just finalized structure)
-- Initialize `package.json`
-- Install dependencies:
-
-```bash
-npm init -y
-npm i express mongoose dotenv cors bcrypt jsonwebtoken socket.io redis multer
-npm i -D nodemon eslint prettier
 ```
+## WEEK 1 — Infrastructure + Auth Foundations
 
-- Setup `.env` and `.env.example`
-- Setup `server.js` and `app.js` to run Express
-- Setup MongoDB connection in `config/db.js`
-- Setup Redis connection in `config/redis.js` (for presence/typing)
-- Test basic `GET /` route
+### Day 1-2 — Core Project Setup (Completed)
 
----
+1. Project folder and directory structure
+2. `package.json` + dependencies installed
+3. `.env` + `.env.example`
+4. Created `server.js` and `app.js`
+5. MongoDB connection (`config/db.js`)
+6. Basic routes working
+7. User CRUD completed:
 
-**Day 3-4: Middleware & Utils**
-
-- Create global middleware:
-
-  - `auth.middleware.js` (JWT verification skeleton)
-  - `error.middleware.js` (centralized error handler)
-  - `upload.middleware.js` (Multer for media uploads)
-  - `rateLimit.middleware.js` (optional, later for security)
-
-- Create basic utils:
-
-  - `jwt.js` (sign/verify)
-  - `response.js` (standard API responses)
-  - `constants.js` (status codes, enums)
+   * Create user
+   * Get all users
+   * Get single user
+   * Update user
+   * Delete user
 
 ---
 
-**Day 5: Socket.IO setup**
+### Day 3 — Auth System (90% Completed)
 
-- Create `socket.js`
-- Initialize Socket.IO server
-- Test simple connection/disconnection event
-- Create `sockets/init.js` to manage events per module
+#### 1. Identifier Utils (Completed)
 
----
+* `isEmail`, `isPhoneE164`, `normalizePhone`, `getIdentifierFromBody`
+* Outputs `{ method, identifier }`
 
-### **Week 2 — User Module**
+#### 2. OTP Model (Completed)
 
-**Goal:** Implement authentication, user profile, presence.
+* Fields: identifier, method, otp, expiresAt, createdAt
 
-**Day 6-7: Auth**
+#### 3. Request OTP (Completed)
 
-- `auth.controller.js` / `auth.service.js`
-- Routes:
+* Generate 6-digit OTP
+* Normalize identifier
+* Upsert OTP
+* Send using console driver
+* Response: `{ message: "OTP sent" }`
 
-  - `POST /api/v1/auth/register`
-  - `POST /api/v1/auth/login`
+#### 4. OTP Driver System (Completed)
 
-- JWT generation and validation
-- Password hashing (bcrypt)
+* Console driver
+* SMS/Email driver stubs
+* Swappable architecture
 
-**Day 8-9: User Module**
+#### 5. Verify OTP (Completed)
 
-- `user.controller.js` / `user.service.js`
-- Routes:
+* Validate OTP
+* Check expiry
+* Delete OTP record
+* If user exists: login
+* If new user: create & login
+* Return `{ token, user }`
 
-  - `GET /api/v1/user/me`
-  - `PUT /api/v1/user/profile`
+#### 6. User Repo + User Service (Completed)
 
-- Socket presence: `user:online` / `user:offline`
+* `findByIdentifier()`
+* `createFromIdentifier()`
 
-**Day 10: Test Users**
+#### 7. JWT Utils + Middleware (Completed)
 
-- Test registration, login, JWT auth
-- Test online/offline events via Socket.IO
+* `jwt.signUser()`
+* `authMiddleware` for protected routes
 
----
-
-### **Week 3 — Chat Module**
-
-**Goal:** Implement 1:1 and group messaging, typing indicators, delivery/read receipts
-
-**Day 11-12: Models**
-
-- `chat.model.js`, `message.model.js`, `group.model.js`
-
-**Day 13-14: Chat Controllers & Services**
-
-- `chat.controller.js` / `chat.service.js`
-- Routes:
-
-  - `POST /api/v1/chat/send`
-  - `GET /api/v1/chat/:chatId`
-  - `POST /api/v1/chat/group`
-
-**Day 15: Chat Socket Events**
-
-- `chat.socket.js` → message send/receive
-- `typing.socket.js` → typing indicator
-- `delivery.socket.js` → delivered/read
+#### 8. Postman Testing (Completed)
 
 ---
 
-### **Week 4 — Call + Status + Media**
+### Day 3 → Moved to Day 4 (Pending)
 
-**Goal:** Audio/video calls, status updates, media uploads
-
-**Day 16-17: Call Module**
-
-- `call.model.js`
-- `call.controller.js` / `call.service.js`
-- Routes: `POST /api/v1/call/start` / `POST /api/v1/call/end`
-- Socket events: `call:offer` / `call:answer` / `call:ice` / `call:end`
-
-**Day 18-19: Status Module**
-
-- `status.model.js`
-- `status.controller.js` / `status.service.js`
-- Routes:
-
-  - `POST /api/v1/status` (create status)
-  - `GET /api/v1/status` (get friend’s statuses)
-
-- Socket: `status:new` / `status:view`
-
-**Day 20: Media Module**
-
-- `media.controller.js` / `media.service.js`
-- Multer or S3 uploads
-- Routes: `POST /api/v1/media/upload`
-
-**Day 21-22: Notifications**
-
-- `notification.model.js` / `notification.service.js`
-- Push or socket notifications
+9.1 Twilio/SMS/Email provider setup + env vars
+9.2 OTP rate-limiting, attempt limits, cooldown
+9.3 Phone prefix endpoint for frontend
 
 ---
 
-### **Final Week — Testing + Refinements**
+## DAY 4 — Production-Ready Auth (Today)
 
-**Day 23-24:** Unit & integration tests (`tests/unit/` and `tests/integration/`)
-**Day 25-26:** Implement workers & queues (`message.queue.js`, `media.processor.js`, `notification.worker.js`)
-**Day 27-28:** Logging, error handling improvements
-**Day 29-30:** End-to-end testing + cleanup + deployment prep
+### Task A — Twilio / Email Provider Setup
+
+1. Add ENV variables:
+
+   * TWILIO_SID
+   * TWILIO_AUTH_TOKEN
+   * TWILIO_PHONE
+2. Implement `sms.driver.js`
+3. Update `otp.sender.js` to select driver
+4. Add dev-mode fallback (console.log OTP)
+
+### Task B — OTP Security + Rate Limiting
+
+1. Limit: max 3 OTP sends per 10 minutes per identifier
+2. Add resend cooldown: 30–45 seconds
+3. Limit OTP verify attempts: max 5
+4. Standard error responses for abuse
+5. Later move rate-limits to Redis
+
+### Task C — Phone Prefix Endpoint
+
+1. Create `/api/phone-prefix`
+2. Serve static JSON list or use library
+3. Response example:
+
+   * `{ country: "India", dial_code: "+91" }`
 
 ---
 
-# **Starting Today**
+## WEEK 2 — Profile + Connections + Presence
 
-**Step 1 (Day 1)** — **Project scaffolding and initial server setup**:
+### Day 5 — Profile Setup
 
-1. Create the `server/src/` folders (all we marked earlier)
-2. Add `.gitkeep` in empty folders
-3. Initialize `package.json`
-4. Install dependencies
-5. Create `server.js` + `app.js` with a simple `GET /` route
-6. Connect MongoDB (`config/db.js`) and Redis (`config/redis.js`)
-7. Test `npm run dev` with Nodemon → server should start
+* User profile fields: name, bio, avatar, gender
+* Update profile endpoint
+* Avatar upload (local or S3 stub)
+
+### Day 6 — Dynamic QR Connection System
+
+* QR code regenerates every 30 seconds
+* Store connection token in Redis with TTL
+* Scan QR → connection request
+* Accept connection → create link
+* Endpoints:
+
+  * `POST /qr/generate`
+  * `POST /connections/request`
+  * `POST /connections/accept`
+  * `DELETE /connections/remove`
+
+### Day 7 — Presence System
+
+* Redis presence tracking
+* Online/offline
+* Last seen
+* Socket events: `user:online`, `user:offline`
+
+---
+
+## WEEK 3 — Chat System
+
+### Day 8-10 — Models
+
+* chat.model.js
+* message.model.js
+* Index optimization
+
+### Day 11-12 — Chat API
+
+* `POST /chat/send`
+* `GET /chat/:chatId`
+* `GET /chat/user/:userId`
+
+### Day 13-14 — Socket Events
+
+* chat:send
+* chat:receive
+* chat:typing
+* chat:delivered
+* chat:read
+
+---
+
+## WEEK 4 — Calls + Status + Media
+
+### Day 15-16 — Call Signaling
+
+* WebRTC offer/answer
+* ICE
+* End call
+* Socket events for signaling
+
+### Day 17-18 — Status Module
+
+* Create status
+* Get friend statuses
+* Status views
+* Socket events: status:new, status:view
+
+### Day 19-20 — Media Uploads
+
+* Image
+* Video
+* Audio
+* File attachments
+* Local or S3
+
+### Day 21-22 — Notifications
+
+* Notification model
+* In-app notifications
+* Mark-as-read logic
+
+---
+
+## FINAL WEEK — Testing + Production
+
+### Day 23-24 — Automated Testing
+
+* Unit tests
+* Integration tests
+
+### Day 25-26 — Workers + Queues
+
+* Message queue worker
+* Media processor
+* Notification worker
+
+### Day 27-28 — Logging + Error Handling
+
+* Centralized error middleware
+* Winston logger
+
+### Day 29-30 — Deployment Prep
+
+* Docker
+* PM2
+* Production environment
+* Cleanup
+* Final end-to-end tests
+
+```
