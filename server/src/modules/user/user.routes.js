@@ -7,7 +7,9 @@ import {
   getAllUsers,
   getUserById,
   updateUser,
-  deleteUser
+  deleteUser,
+  getMe,
+  updateMe,
 } from "./user.controller.js";
 
 const router = Router();
@@ -22,13 +24,10 @@ router.put("/update-user/:id", updateUser);
 router.delete("/delete-user/:id", deleteUser);
 
 // ---------------------------------------
-// Protected route — GET Logged-in user
+// logged-in user routes
 // ---------------------------------------
-router.get("/me", authMiddleware, (req, res) => {
-  return res.status(200).json({
-    success: true,
-    user: req.user,
-  });
-});
+router.get("/me", authMiddleware, getMe);
+router.put("/me", authMiddleware, updateMe);
+
 
 export default router;

@@ -167,3 +167,51 @@ export const deleteUser = async (req, res, next) => {
     next(error);
   }
 };
+
+// ====================================== //
+// GET LOGGED-IN USER ( /user/me )
+// ====================================== //
+export const getMe = (req, res) => {
+  return res.status(200).json({
+    success: true,
+    data: req.user, // authMiddleware already loaded user
+  });
+};
+
+// ====================================== //
+// UPDATE LOGGED-IN USER PROFILE ( /user/me )
+// ====================================== //
+export const updateMe = async (req, res, next) => {
+  try {
+    const allowedFields = ["name", "avatar", "status"];
+    const updates = {};
+
+    // Only keep allowed fields
+    for (const key of allowedFields) {
+      if (req.body[key] !== undefined) {
+        updates[key] = req.body[key];
+      }
+    }
+
+    // If no valid field submitted
+    if (Object.keys(updates).length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "No valid fields to update",
+      });
+    }
+
+    const user = await User.findByIdAndUpdate(req.user._id, updates, {
+      new: true,
+      runValidators: true,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Profile updated",
+      data: user,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
