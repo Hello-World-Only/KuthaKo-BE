@@ -11,6 +11,12 @@ import "express-async-errors"; // catches async errors
 import userRoutes from "./modules/user/user.routes.js";
 import authRoutes from "./modules/auth/auth.routes.js";
 
+// ======================================== //
+// QR
+import qrRoutes from "./modules/qr/qr.routes.js";
+
+
+
 const app = express();
 
 // Required when running behind Render proxy
@@ -47,6 +53,9 @@ app.use("/api/v1", userRoutes);
 
 // Auth routes
 app.use("/api/v1/auth", authRoutes);
+
+// QR Routes
+app.use("/qr", qrRoutes);
 
 // ======================================== //
 // Global Error Handler

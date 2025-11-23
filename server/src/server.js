@@ -8,6 +8,17 @@ import app from "./app.js";
 import connectDB from "./config/db.js";
 import { Server } from "socket.io";
 
+// ====================================== //
+// TEST LOG: STARTs
+import { appConfig } from "./config/appConfig.js";
+console.log("QR expiry =", appConfig.qrExpirySeconds);
+
+import { QrToken } from "./database/models/QrToken.js";
+
+console.log("QrToken model loaded:", !!QrToken);
+// TEST LOG: ENDs
+// ====================================== //
+
 // NOTE:
 // Redis import will be added later when (we) convert redis.js to ESM
 // import { connectRedis } from "./config/redis.js";
