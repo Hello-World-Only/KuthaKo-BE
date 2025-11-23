@@ -11,6 +11,8 @@ import {
   getMe,
   updateMe,
 } from "./user.controller.js";
+import { uploadAvatar } from "../../upload/multer.config.js";
+import { updateAvatar } from "./user.controller.js";
 
 const router = Router();
 
@@ -28,6 +30,11 @@ router.delete("/delete-user/:id", deleteUser);
 // ---------------------------------------
 router.get("/me", authMiddleware, getMe);
 router.put("/me", authMiddleware, updateMe);
+
+// ---------------------------------------
+// Cloudinary Uploads: routes
+// ---------------------------------------
+router.put("/me/avatar", authMiddleware, uploadAvatar, updateAvatar);
 
 
 export default router;

@@ -2,6 +2,7 @@
 
 import validator from "validator";
 import User from "../../database/models/user.model.js";
+import { uploadAvatarDriver } from "../../upload/avatar.driver.js";
 
 // ====================================== //
 // CREATE USER
@@ -213,5 +214,41 @@ export const updateMe = async (req, res, next) => {
     });
   } catch (error) {
     next(error);
+  }
+};
+
+
+// ====================================== //
+// UPDATE USER AVATAR ( /me/avatar )
+// ====================================== //
+export const updateAvatar = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: "No avatar file uploaded",
+      });
+    }
+
+    const avatarUrl = await uploadAvatarDriver(req.file);
+
+    const user = await User.findByIdAndUpdate(
+      req.user._id,
+      { avatar: avatarUrl },
+      { new: true }
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Avatar updated successfully",
+      data: user,
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Avatar upload failed",
+      error: error.message,
+    });
   }
 };

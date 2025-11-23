@@ -38,7 +38,10 @@ app.get("/", (req, res) => {
 });
 
 // ======================================== //
-// API Routes
+// [==== API Routes ====] //
+// Cloudinary: routes
+app.use("/uploads", express.static("src/uploads"));
+
 // All user routes are under /api/v1
 app.use("/api/v1", userRoutes);
 
