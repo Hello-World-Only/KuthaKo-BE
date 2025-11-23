@@ -18,10 +18,39 @@ export const AuthService = {
     requestOTP: async (body) => {
         const { method, identifier } = getIdentifierFromBody(body);
 
-        // ✅ Rate Limit → MUST GO HERE
+        // 🚫 Rate limit requests
         rateLimiter.checkRequestLimit(identifier);
 
-        const otp = generateOTP();
+        // -------------------------
+        // 📱 PHONE → Twilio Verify
+        // -------------------------
+        if (method === "phone") {
+            const twilio = (await import("twilio")).default;
+
+            const client = twilio(
+                process.env.TWILIO_ACCOUNT_SID,
+                process.env.TWILIO_AUTH_TOKEN
+            );
+
+            await client.verify.v2
+                .services(process.env.TWILIO_VERIFY_SID)
+                .verifications
+                .create({
+                    to: identifier,
+                    channel: "sms",
+                });
+
+            return {
+                message: "OTP sent via SMS",
+                method,
+                identifier,
+            };
+        }
+
+        // -------------------------
+        // ✉ EMAIL → DB + Resend
+        // -------------------------
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
         const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
 
         await otpRepository.upsertOTP(identifier, otp, method, expiresAt);
@@ -42,9 +71,49 @@ export const AuthService = {
         if (!otp) throw new Error("OTP is required.");
         if (typeof otp !== "string") throw new Error("Invalid OTP format.");
 
-        // 🔥 Prevent brute-force attacks
+        // 🚫 Prevent brute-force attempts
         rateLimiter.checkVerifyLimit(identifier);
 
+        // -------------------------
+        // 📱 PHONE → Twilio Verify
+        // -------------------------
+        if (method === "phone") {
+            const twilio = (await import("twilio")).default;
+
+            const client = twilio(
+                process.env.TWILIO_ACCOUNT_SID,
+                process.env.TWILIO_AUTH_TOKEN
+            );
+
+            const result = await client.verify.v2
+                .services(process.env.TWILIO_VERIFY_SID)
+                .verificationChecks
+                .create({
+                    to: identifier,
+                    code: otp,
+                });
+
+            if (!result.valid) {
+                rateLimiter.addVerifyFail(identifier);
+                throw new Error("Invalid OTP.");
+            }
+
+            // Reset failed attempts
+            rateLimiter.resetVerifyFails(identifier);
+
+            const user = await userRepository.findOrCreateUser(method, identifier);
+            const token = signToken(user._id);
+
+            return {
+                message: "OTP verified successfully",
+                token,
+                user,
+            };
+        }
+
+        // -------------------------
+        // ✉ EMAIL → DB validation
+        // -------------------------
         const otpEntry = await otpRepository.findByIdentifier(identifier);
 
         if (!otpEntry) throw new Error("OTP not requested or expired.");
@@ -54,11 +123,13 @@ export const AuthService = {
             throw new Error("Invalid OTP.");
         }
 
-        if (otpEntry.expiresAt < new Date()) throw new Error("OTP expired.");
+        if (otpEntry.expiresAt < new Date()) {
+            throw new Error("OTP expired.");
+        }
 
         await otpRepository.deleteOTP(identifier);
 
-        // 🔥 Reset failed attempts on success
+        // reset attempts
         rateLimiter.resetVerifyFails(identifier);
 
         const user = await userRepository.findOrCreateUser(method, identifier);
@@ -70,4 +141,5 @@ export const AuthService = {
             user,
         };
     },
+
 };
