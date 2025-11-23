@@ -2,9 +2,9 @@
 
 import twilio from "twilio";
 
-export const smsDriver = async ({ to, message }) => {
+export const smsDriver = async ({ to }) => {
     const {
-        TWILIO_SERVICE_SID,
+        TWILIO_VERIFY_SID,
         TWILIO_ACCOUNT_SID,
         TWILIO_AUTH_TOKEN,
     } = process.env;
@@ -12,15 +12,17 @@ export const smsDriver = async ({ to, message }) => {
     const client = twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
 
     try {
-        await client.messages.create({
-            messagingServiceSid: TWILIO_SERVICE_SID,
-            to,
-            body: message,
-        });
+        // Twilio Verify → this sends OTP automatically
+        await client.verify.v2.services(TWILIO_VERIFY_SID)
+            .verifications
+            .create({
+                to,
+                channel: "sms",
+            });
 
         console.log("OTP SMS sent →", to);
     } catch (error) {
-        console.error("Twilio SMS Error:", error.message);
+        console.error("Twilio Verify Error:", error.message);
         throw new Error("Failed to send OTP SMS");
     }
 };
