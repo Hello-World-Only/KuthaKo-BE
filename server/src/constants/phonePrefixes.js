@@ -1,0 +1,18 @@
+export const phonePrefixes = [
+    { country: "India", code: "+91" },
+    { country: "United States", code: "+1" },
+    { country: "United Kingdom", code: "+44" },
+    { country: "Canada", code: "+1" },
+    { country: "Australia", code: "+61" },
+    { country: "Germany", code: "+49" },
+    { country: "France", code: "+33" },
+    { country: "Italy", code: "+39" },
+    { country: "Spain", code: "+34" },
+    { country: "Netherlands", code: "+31" },
+    { country: "Singapore", code: "+65" },
+    { country: "UAE", code: "+971" },
+    { country: "Bangladesh", code: "+880" },
+    { country: "Nepal", code: "+977" },
+    { country: "Pakistan", code: "+92" },
+    { country: "Sri Lanka", code: "+94" },
+];

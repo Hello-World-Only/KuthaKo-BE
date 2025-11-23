@@ -1,5 +1,6 @@
 // server/src/modules/auth/auth.controller.js
 import { AuthService } from "./auth.service.js";
+import { phonePrefixes } from "../../constants/phonePrefixes.js";
 
 export const AuthController = {
     requestOTP: async (req, res) => {
@@ -35,4 +36,12 @@ export const AuthController = {
             });
         }
     },
+};
+
+// Phone: Get: Common Country Prefix 
+export const getPhonePrefixes = (req, res) => {
+    return res.json({
+        success: true,
+        prefixes: phonePrefixes
+    });
 };
