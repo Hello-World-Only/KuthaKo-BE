@@ -4,9 +4,9 @@ import twilio from "twilio";
 
 export const smsDriver = async ({ to, message }) => {
     const {
+        TWILIO_SERVICE_SID,
         TWILIO_ACCOUNT_SID,
         TWILIO_AUTH_TOKEN,
-        TWILIO_SERVICE_SID,
     } = process.env;
 
     const client = twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
