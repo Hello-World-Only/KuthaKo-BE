@@ -23,11 +23,28 @@ app.set("trust proxy", 1);
 
 // ======================================== //
 // Middleware
-app.use(cors({
-  origin: "*",
-  allowedHeaders: ["Authorization", "Content-Type"],
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "https://kuthako.app"
+    ],
+    credentials: true,
+    allowedHeaders: ["Authorization", "Content-Type"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  })
+);
+
+// Optional but recommended:
+app.options("*", cors({
+  origin: [
+    "http://localhost:5173",
+    "https://kuthako.app"
+  ],
+  credentials: true,
 }));
+
+
 
 app.use(helmet());
 app.use(express.json());
