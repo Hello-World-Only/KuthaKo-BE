@@ -1,18 +1,18 @@
 // src/modules/qr/qr.routes.js
+import { Router } from "express";
+import auth from "../../middleware/auth.middleware.js";
+import {
+    generateQr,
+    scanQr,
+    acceptQrRequest,
+    getPendingQrRequest
+} from "./qr.controller.js";
 
-import express from "express";
-import { scanQr } from "./qr.controller.js";
-import { generateQr } from "./qr.controller.js";
-import { authMiddleware } from "../../middleware/auth.middleware.js";
-import { acceptQrRequest } from "./qr.controller.js";
-import { getPendingQrRequest } from "./qr.controller.js";
+const router = Router();
 
-const router = express.Router();
-
-router.post("/generate", authMiddleware, generateQr);
-router.post("/scan", authMiddleware, scanQr);
-router.post("/accept", authMiddleware, acceptQrRequest);
-router.get("/pending", authMiddleware, getPendingQrRequest);
+router.post("/generate", auth, generateQr);
+router.post("/scan", auth, scanQr);
+router.post("/accept", auth, acceptQrRequest);
+router.get("/pending", auth, getPendingQrRequest);
 
 export default router;
-

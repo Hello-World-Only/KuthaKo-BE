@@ -4,8 +4,9 @@ import crypto from "crypto";
 import { appConfig } from "../../config/appConfig.js";
 import { QrToken } from "../../database/models/QrToken.js";
 import { ConnectionRequest } from "../../database/models/ConnectionRequest.js";
-import { Connection } from "../../database/models/Connection.js";
+import Connection from "../../database/models/Connection.js";
 import User from "../../database/models/user.model.js";
+import Chat from "../../database/models/chat.model.js";
 
 
 
@@ -89,6 +90,75 @@ export const scanQr = async (req, res) => {
 };
 
 
+// // ============================
+// // STEP 5: ACCEPT CONNECTION REQUEST
+// // ============================
+// export const acceptQrRequest = async (req, res) => {
+//     try {
+//         const userA = req.user._id;
+//         const { requestId } = req.body;
+
+//         // 1. Find request
+//         const reqDoc = await ConnectionRequest.findById(requestId);
+
+//         if (!reqDoc) {
+//             return res.status(404).json({
+//                 success: false,
+//                 message: "Request not found"
+//             });
+//         }
+
+//         // Only User A (the 'to') can accept
+//         if (reqDoc.to.toString() !== userA.toString()) {
+//             return res.status(403).json({
+//                 success: false,
+//                 message: "You cannot accept this request"
+//             });
+//         }
+
+//         // Must be pending
+//         if (reqDoc.status !== "PENDING") {
+//             return res.status(400).json({
+//                 success: false,
+//                 message: "Request already processed"
+//             });
+//         }
+
+//         const userB = reqDoc.from;
+
+//         // 2. Create connection
+//         const connection = await Connection.create({
+//             users: [userA, userB]
+//         });
+
+//         // 3. Update request status
+//         reqDoc.status = "ACCEPTED";
+//         await reqDoc.save();
+
+//         // 4. Add each other to contacts
+//         await User.findByIdAndUpdate(userA, {
+//             $addToSet: { contacts: userB }
+//         });
+
+//         await User.findByIdAndUpdate(userB, {
+//             $addToSet: { contacts: userA }
+//         });
+
+//         return res.json({
+//             success: true,
+//             status: "CONNECTED",
+//             connectionId: connection._id
+//         });
+
+//     } catch (err) {
+//         console.error("Accept QR request error:", err);
+//         res.status(500).json({
+//             success: false,
+//             message: "Failed to accept request"
+//         });
+//     }
+// };
+
 // ============================
 // STEP 5: ACCEPT CONNECTION REQUEST
 // ============================
@@ -143,10 +213,18 @@ export const acceptQrRequest = async (req, res) => {
             $addToSet: { contacts: userA }
         });
 
+        // ================================
+        // 5. CREATE CHAT (THIS WAS MISSING)
+        // ================================
+        const chat = await Chat.create({
+            participants: [userA, userB],
+        });
+
         return res.json({
             success: true,
             status: "CONNECTED",
-            connectionId: connection._id
+            connectionId: connection._id,
+            chatId: chat._id   // 🚀 return chat ID
         });
 
     } catch (err) {
@@ -157,7 +235,6 @@ export const acceptQrRequest = async (req, res) => {
         });
     }
 };
-
 
 // ============================
 // STEP 6 — Get Pending Request

@@ -1,3 +1,4 @@
+// src/database/models/Connection.js
 import mongoose from "mongoose";
 
 const ConnectionSchema = new mongoose.Schema(
@@ -13,4 +14,4 @@ const ConnectionSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-export const Connection = mongoose.model("Connection", ConnectionSchema);
+export default mongoose.model("Connection", ConnectionSchema);

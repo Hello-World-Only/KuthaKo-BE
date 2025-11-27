@@ -1,7 +1,7 @@
 // src/modules/connections/connections.controller.js
 
 import User from "../../database/models/user.model.js";
-import { Connection } from "../../database/models/Connection.js";
+import Connection from "../../database/models/Connection.js";
 
 export const getConnections = async (req, res) => {
     try {

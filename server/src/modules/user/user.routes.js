@@ -1,7 +1,7 @@
 // server/src/modules/user/user.routes.js
 
 import { Router } from "express";
-import { authMiddleware } from "../../middleware/auth.middleware.js";
+import auth from "../../middleware/auth.middleware.js";
 import {
   createUser,
   getAllUsers,
@@ -26,15 +26,14 @@ router.put("/update-user/:id", updateUser);
 router.delete("/delete-user/:id", deleteUser);
 
 // ---------------------------------------
-// logged-in user routes
+// Logged-in user routes
 // ---------------------------------------
-router.get("/me", authMiddleware, getMe);
-router.put("/me", authMiddleware, updateMe);
+router.get("/me", auth, getMe);
+router.put("/me", auth, updateMe);
 
 // ---------------------------------------
-// Cloudinary Uploads: routes
+// Avatar Upload (protected)
 // ---------------------------------------
-router.put("/me/avatar", authMiddleware, uploadAvatar, updateAvatar);
-
+router.put("/me/avatar", auth, uploadAvatar, updateAvatar);
 
 export default router;
