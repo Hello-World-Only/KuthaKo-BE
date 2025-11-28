@@ -4,7 +4,12 @@ import mongoose from "mongoose";
 
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(process.env.MONGO_URI);
+    // PREVENT MONGOOSE FROM RECREATING INDEXES AUTOMATICALLY
+    mongoose.set("autoIndex", false);
+
+    const conn = await mongoose.connect(process.env.MONGO_URI, {
+      dbName: "kuthako", // optional but recommended
+    });
 
     console.log(`MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
