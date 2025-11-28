@@ -49,7 +49,7 @@
 ✔ name, avatar, status fields
 ✔ Cloudinary upload system
 ✔ Upload drivers
-✔ Render deploy test (passed)
+✔ Render deploy test
 
 ---
 
@@ -65,16 +65,16 @@
 # 🟩 **DAY 6 — QR Connection System (✔ COMPLETED – BIG)**
 
 ✔ QrToken model
-✔ Generate (single-use, time-limited)
+✔ Generate time-limited QR
 ✔ Scan → create connectionRequest
 ✔ Pending request API
-✔ Accept request → create full Connection
+✔ Accept → create full Connection
 ✔ Delete expired QR
 ✔ Delete expired requests
 ✔ Get all connections
 ✔ Remove connection
 
-🔥 Perfect WhatsApp-style connection system.
+🔥 **WhatsApp-style connection system — COMPLETE**
 
 ---
 
@@ -90,190 +90,67 @@
 ✔ Disconnect events
 ✔ Frontend presence ready
 
-*(Redis presence optional later.)*
-
 ---
 
-## 🟩 **Day 8 — CHAT MODELS (✔ Completed TODAY)**
+## 🟩 **Day 8 — CHAT MODELS (✔ Completed)**
 
 ✔ chat.model.js
 ✔ message.model.js
-✔ Proper indexes
-✔ replyTo support
-✔ attachments schema
-✔ reaction schema
-✔ delivered + seen tracking
+✔ Indexes
+✔ replyTo
+✔ attachments
+✔ reactions
+✔ delivered + seen
 
 ---
 
-## 🟩 **Day 9 — CHAT REPOSITORIES (✔ Completed TODAY)**
+## 🟩 **Day 9 — CHAT REPOSITORIES (✔ Completed)**
 
 ✔ chat.repository.js
 ✔ message.repository.js
-✔ findOrCreate 1–1 chat
+✔ findOrCreate 1–1
 ✔ update lastMessage
 ✔ unread counters
-✔ get messages pagination
-✔ get chat list
+✔ paginated messages
+✔ chat list
 
 ---
 
-## 🟩 **Day 10 — CHAT SERVICES (✔ Completed TODAY)**
+# 🟦 **DAY 10 — START HERE (NEXT TASK)**
 
-✔ chat.service.js
-✔ message.service.js
-✔ ensureConnected
-✔ resetUnread
-✔ getOrCreateChat
-✔ sendMessage logic
-✔ markDelivered
-✔ markSeen
+⭐ **Chat Services are next (not started yet)**
+– ensureConnected
+– sendMessage logic
+– markDelivered
+– markSeen
+– resetUnread
+– getOrCreateChat
 
----
-
-## 🟩 **Day 11 — CHAT CONTROLLERS (✔ Completed TODAY)**
-
-✔ getChatList
-✔ getMessages
-✔ markSeen
-✔ sendMessage
-✔ middleware integration
+(This is the FIRST task of Day 10.)
 
 ---
 
-## 🟩 **Day 12 — CHAT ROUTES (✔ Completed TODAY)**
+## **AFTER DAY 10 — ROUTES + CONTROLLERS**
 
-✔ /chat/list
-✔ /chat/send
-✔ /chat/:id/messages
-✔ /chat/:id/seen
-✔ ensureChatParticipant middleware
+Day 11 → Controllers
+Day 12 → Routes
+Day 13–14 → Real-time Socket.io
 
 ---
 
-## 🟩 **Day 13–14 — REAL-TIME CHAT (✔ Completed TODAY)**
+# 🎉 **CURRENT PROGRESS SUMMARY**
 
-### ✔ Socket.io backend
-
-* chat:send
-* chat:receive
-* chat:sent (ack)
-* chat:typing
-* message:delivered
-* message:seen
-* chat:history pagination
-* presence events
-
-### ✔ onlineUsers map
-
-### ✔ socket auth (JWT handshake)
-
-### ✔ DB updates on events
-
-🔥 Real-time messaging backend = FINISHED!!
-
----
-
-# 🟧 **WEEK 3 — Bigger Features (OPTIONAL / LATER)**
-
-## **Day 15–16 — Call Signaling (❌ Pending)**
-
-◻ WebRTC offer/answer
-◻ Exchange ICE
-◻ End call
-
----
-
-## **Day 17–18 — Status / Stories (❌ Pending)**
-
-◻ Create status
-◻ Upload media
-◻ Show statuses
-◻ Seen-by
-◻ Socket events
-
----
-
-## **Day 19–20 — Media Upload in Chat (❌ Pending)**
-
-◻ cloudinary upload for messages
-◻ Send image
-◻ Send video
-◻ Send audio
-◻ File attachments
-
----
-
-## **Day 21–22 — Notifications (❌ Pending)**
-
-◻ Notification model
-◻ In-app toast events
-◻ Unread notification counter
-
----
-
-# 🟥 **WEEK 4 — Production Systems**
-
-## **Day 23–24 — Automated Testing (❌ Pending)**
-
-◻ Unit tests
-◻ Integration tests
-
----
-
-## **Day 25–26 — Queues + Workers (❌ Pending)**
-
-◻ Media processor
-◻ Notification queue
-◻ Message queue (optional)
-
----
-
-## **Day 27–28 — Logging + Error Handling (❌ Pending)**
-
-◻ Error middleware
-◻ Winston logger
-◻ Request tracing
-
----
-
-## **Day 29–30 — Deployment Prep (❌ Pending)**
-
-◻ Docker setup
-◻ PM2
-◻ CI/CD
-◻ Cleanup
-◻ Final tests
-
----
-
-# 🎉 **CURRENT PROGRESS SUMMARY (Updated Fully)**
-
-| Module                   | Status |
-| ------------------------ | ------ |
-| Project Setup            | ✔ Done |
-| User CRUD                | ✔ Done |
-| OTP Auth                 | ✔ Done |
-| JWT Auth                 | ✔ Done |
-| Profile System           | ✔ Done |
-| Cloudinary Uploads       | ✔ Done |
-| QR System                | ✔ Done |
-| Scan Request             | ✔ Done |
-| Pending Request          | ✔ Done |
-| Accept Connection        | ✔ Done |
-| Contacts List            | ✔ Done |
-| Remove Connection        | ✔ Done |
-| Presence                 | ✔ Done |
-| Chat Models              | ✔ Done |
-| Chat Repositories        | ✔ Done |
-| Chat Services            | ✔ Done |
-| Chat Controllers         | ✔ Done |
-| Chat Routes              | ✔ Done |
-| Socket.io Real-time Chat | ✔ Done |
-
-🔥 **Backend for 1–1 chatting is now 100% COMPLETE.**
-🔥 Only OPTIONAL future modules left (groups, media, calls, notifications).
-🔥 You are 2–3 days AHEAD of schedule.
-
----
-
+| Module             | Status           |
+| ------------------ | ---------------- |
+| Project Setup      | ✔ Done           |
+| User CRUD          | ✔ Done           |
+| OTP Auth           | ✔ Done           |
+| JWT Auth           | ✔ Done           |
+| Profile System     | ✔ Done           |
+| Cloudinary Uploads | ✔ Done           |
+| QR System          | ✔ Done           |
+| Connections        | ✔ Done           |
+| Presence           | ✔ Done           |
+| Chat Models        | ✔ Done           |
+| Chat Repositories  | ✔ Done           |
+| **Chat Services**  | ⏳ NEXT (Day 10) |
