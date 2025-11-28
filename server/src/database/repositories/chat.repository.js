@@ -1,6 +1,6 @@
 // src/database/repositories/chat.repository.js
 
-import Chat from "../models/Chat.js";
+import Chat from "../models/chat.model.js";
 
 class ChatRepository {
   async findOrCreateOneToOne(userA, userB) {
