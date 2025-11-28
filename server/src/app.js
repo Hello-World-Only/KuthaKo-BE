@@ -10,6 +10,7 @@ import userRoutes from "./modules/user/user.routes.js";
 import authRoutes from "./modules/auth/auth.routes.js";
 import qrRoutes from "./modules/qr/qr.routes.js";
 import connectionRoutes from "./modules/connections/connections.routes.js";
+// import chatRoutes from "./modules/chat/chat.routes.js";
 import chatRoutes from "./modules/chat/chat.routes.js";
 
 const app = express();
@@ -17,13 +18,12 @@ const app = express();
 app.set("trust proxy", 1);
 
 // CORS
-app.use(cors({
-  origin: [
-    "http://localhost:5173",
-    "https://kuthako.app"
-  ],
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: ["http://localhost:5173", "https://kuthako.app"],
+    credentials: true,
+  })
+);
 app.options("*", cors());
 
 // Security
@@ -44,8 +44,9 @@ app.get("/", (req, res) => {
 });
 
 // Routes
+// Routes
 app.use("/uploads", express.static("src/uploads"));
-app.use("/api/v1", userRoutes);
+app.use("/api/v1/users", userRoutes); // FIXED
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/qr", qrRoutes);
 app.use("/api/v1/connections", connectionRoutes);

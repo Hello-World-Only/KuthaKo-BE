@@ -7,19 +7,26 @@ import { ensureChatParticipant } from "../../middleware/chatAccess.middleware.js
 
 const router = Router();
 
-// Require JWT auth for all routes
+// Secure all routes
 router.use(auth);
 
-// Get user chat list
+// Start or fetch chat
+router.post("/start", chatController.startChat);
+
+// Chat list
 router.get("/list", chatController.getChatList);
 
-// Get messages of a chat (must be participant)
-router.get("/:chatId/messages", ensureChatParticipant, chatController.getMessages);
+// Load messages
+router.get(
+  "/:chatId/messages",
+  ensureChatParticipant,
+  chatController.getMessages
+);
 
-// Mark chat messages as seen
+// Mark seen
 router.post("/:chatId/seen", ensureChatParticipant, chatController.markSeen);
 
-// Send a message (controller checks connection)
+// Send message
 router.post("/send", chatController.sendMessage);
 
 export default router;

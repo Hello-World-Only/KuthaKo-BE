@@ -1,93 +1,59 @@
 // src/database/repositories/chat.repository.js
 
-import Chat from "../models/chat.model.js";
+import Chat from "../models/Chat.js";
 
 class ChatRepository {
+  async findOrCreateOneToOne(userA, userB) {
+    let chat = await Chat.findOne({
+      isGroup: false,
+      participants: { $all: [userA, userB] },
+    });
 
-    /**
-     * Find or create a one-to-one chat between two users.
-     */
-    async findOrCreateOneToOne(userA, userB) {
-        let chat = await Chat.findOneToOne(userA, userB);
-
-        if (!chat) {
-            chat = await Chat.create({
-                participants: [userA, userB],
-                isGroup: false,
-                unread: [
-                    { userId: userA, count: 0 },
-                    { userId: userB, count: 0 }
-                ]
-            });
-        }
-
-        return chat;
+    if (!chat) {
+      chat = await Chat.create({
+        isGroup: false,
+        participants: [userA, userB],
+      });
     }
 
-    /**
-     * Get all chats for a user (sidebar)
-     */
-    async getChatsForUser(userId) {
-        return Chat.find({ participants: userId })
-            .populate("participants", "_id name email avatar status isOnline lastSeen")
-            .sort({ updatedAt: -1 });
-    }
+    return chat;
+  }
 
-    /**
-     * Find a chat by ID
-     * Needed for:
-     * - chat:history
-     * - validating participant
-     */
-    async findById(chatId) {
-        return Chat.findById(chatId);
-    }
+  async getChatsForUser(userId) {
+    const chats = await Chat.find({
+      participants: userId,
+    })
+      .populate("participants", "name avatar")
+      .populate("lastMessage")
+      .sort({ updatedAt: -1 });
 
-    /**
-     * Update lastMessage and increment unread for receivers
-     */
-    async updateLastMessage(chatId, message, senderId) {
-        const chat = await Chat.findById(chatId);
-        if (!chat) return null;
+    return chats.map((chat) => {
+      const participantsArr = Array.isArray(chat.participants)
+        ? chat.participants
+        : [];
 
-        // Update last message
-        chat.lastMessage = {
-            _id: message._id,
-            sender: senderId,
-            text: message.text || null,
-            type: message.type,
-            createdAt: message.createdAt
-        };
+      const otherUser = participantsArr.find(
+        (u) => u && u._id && u._id.toString() !== userId.toString()
+      );
 
-        // Ensure unread array is properly initialized
-        if (!chat.unread || chat.unread.length === 0) {
-            chat.unread = chat.participants.map((p) => ({
-                userId: p,
-                count: 0
-            }));
-        }
+      return {
+        chatId: chat._id.toString(),
+        otherUser: otherUser || null,
+        lastMessage: chat.lastMessage || null,
+      };
+    });
+  }
 
-        // Increment unread for everyone except sender
-        chat.unread = chat.unread.map((u) => {
-            if (u.userId.toString() !== senderId.toString()) {
-                u.count++;
-            }
-            return u;
-        });
+  async findById(id) {
+    return Chat.findById(id).populate("participants", "name avatar");
+  }
 
-        await chat.save();
-        return chat;
-    }
-
-    /**
-     * Reset unread counter for a specific user
-     */
-    async resetUnread(chatId, userId) {
-        return Chat.updateOne(
-            { _id: chatId, "unread.userId": userId },
-            { $set: { "unread.$.count": 0 } }
-        );
-    }
+  async resetUnread(chatId, userId) {
+    return Chat.updateOne(
+      { _id: chatId },
+      { $set: { [`unread.${userId}`]: 0 } }
+    );
+  }
 }
 
 export default new ChatRepository();

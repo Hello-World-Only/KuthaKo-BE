@@ -4,105 +4,95 @@ import chatService from "./chat.service.js";
 import messageService from "./message.service.js";
 
 class ChatController {
-
-    /**
-     * GET /chat/list
-     */
-    async getChatList(req, res) {
-        try {
-            const userId = req.user._id;
-            const chats = await chatService.getChatsForUser(userId);
-            return res.json({ success: true, chats });
-        } catch (err) {
-            console.error("getChatList error:", err);
-            return res.status(500).json({ success: false, message: "Server error" });
-        }
+  async getChatList(req, res) {
+    try {
+      const userId = req.user._id;
+      const chats = await chatService.getChatsForUser(userId);
+      return res.json({ success: true, chats });
+    } catch (err) {
+      console.error("getChatList error:", err);
+      return res.status(500).json({ success: false });
     }
+  }
 
-    /**
-     * GET /chat/:chatId/messages
-     */
-    async getMessages(req, res) {
-        try {
-            const { chatId } = req.params;
-            const limit = parseInt(req.query.limit || 50);
-            const before = req.query.before ? new Date(req.query.before) : null;
+  async getMessages(req, res) {
+    try {
+      const { chatId } = req.params;
 
-            const messages = await messageService.getMessages(chatId, limit, before);
+      const messages = await messageService.getMessages(chatId, 50);
 
-            return res.json({ success: true, messages });
-        } catch (err) {
-            console.error("getMessages error:", err);
-            return res.status(500).json({ success: false, message: "Server error" });
-        }
+      const chat = await chatService.getChatById(chatId);
+
+      return res.json({ success: true, messages, chat });
+    } catch (err) {
+      console.error("getMessages error:", err);
+      return res.status(500).json({ success: false });
     }
+  }
 
-    /**
-     * POST /chat/send
-     */
-    async sendMessage(req, res) {
-        try {
-            const senderId = req.user._id;
-            const { receiverId, type, text, attachments, replyTo } = req.body;
+  async sendMessage(req, res) {
+    try {
+      const senderId = req.user._id;
+      const { receiverId, chatId, text, type } = req.body;
 
-            // 1. Ensure users are connected
-            const allowed = await chatService.ensureConnected(senderId, receiverId);
-            if (!allowed) {
-                return res.status(403).json({
-                    success: false,
-                    message: "Users are not connected"
-                });
-            }
+      const allowed = await chatService.ensureConnected(senderId, receiverId);
+      if (!allowed)
+        return res
+          .status(403)
+          .json({ success: false, message: "Users not connected" });
 
-            // 2. Get or create chat
-            const chat = await chatService.getOrCreateChat(senderId, receiverId);
+      let chat = chatId
+        ? await chatService.getChatById(chatId)
+        : await chatService.getOrCreateChat(senderId, receiverId);
 
-            // 3. Create message
-            const msg = await messageService.sendMessage({
-                chatId: chat._id,
-                sender: senderId,
-                receiver: receiverId,
-                type,
-                text,
-                attachments,
-                replyTo
-            });
+      const msg = await messageService.sendMessage({
+        chatId: chat._id,
+        sender: senderId,
+        receiver: receiverId,
+        type,
+        text,
+      });
 
-            return res.json({ success: true, message: msg });
-
-        } catch (err) {
-            console.error("sendMessage error:", err);
-            return res.status(500).json({ success: false, message: "Server error" });
-        }
+      return res.json({ success: true, message: msg });
+    } catch (err) {
+      console.error("sendMessage error:", err);
+      return res.status(500).json({ success: false });
     }
+  }
 
-    /**
-     * POST /chat/:chatId/seen
-     * Mark all messages as seen (REST fallback)
-     */
-    async markSeen(req, res) {
-        try {
-            const { chatId } = req.params;
-            const userId = req.user._id;
+  async markSeen(req, res) {
+    try {
+      const { chatId } = req.params;
+      const userId = req.user._id;
 
-            // Reset unread count
-            await chatService.resetUnread(chatId, userId);
+      await chatService.resetUnread(chatId, userId);
 
-            // Mark only messages not sent by the same user
-            const messages = await messageService.getMessages(chatId, 100);
-            for (const m of messages) {
-                if (m.sender.toString() !== userId.toString()) {
-                    await messageService.markSeen(m._id, userId);
-                }
-            }
-
-            return res.json({ success: true });
-
-        } catch (err) {
-            console.error("markSeen error:", err);
-            return res.status(500).json({ success: false, message: "Server error" });
-        }
+      return res.json({ success: true });
+    } catch (err) {
+      console.error("markSeen error:", err);
+      return res.status(500).json({ success: false });
     }
+  }
+
+  async startChat(req, res) {
+    try {
+      const senderId = req.user._id;
+      const { receiverId } = req.body;
+
+      const allowed = await chatService.ensureConnected(senderId, receiverId);
+      if (!allowed)
+        return res
+          .status(403)
+          .json({ success: false, message: "Users not connected" });
+
+      const chat = await chatService.getOrCreateChat(senderId, receiverId);
+
+      return res.json({ success: true, chatId: chat._id });
+    } catch (err) {
+      console.error("startChat error:", err);
+      return res.status(500).json({ success: false });
+    }
+  }
 }
 
 export default new ChatController();
